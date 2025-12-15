@@ -8,7 +8,7 @@ from src.train import train_model
 from src.utils import plot_epoch_history, compute_per_band_rmse_and_snr, plot_rmse_snr, get_band_importance_from_dict
 from src.classifiers import evaluate_classifiers
 from src.search_param import run_hyperparam_search
-from src.utils import save_training_plots
+# from src.utils import save_training_plots
 
 # ---------------- Load config ----------------
 import torch
