@@ -19,6 +19,7 @@ def validation_score(
     """
     val_frac=0.2
     H, W, B =cube.shape
+    indices = np.arange(B)
     n_val = int(np.ceil(val_frac * B))
     val_idx = indices[:n_val]
     train_idx = indices[n_val:]
