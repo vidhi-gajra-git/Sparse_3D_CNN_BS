@@ -102,7 +102,7 @@ def run_hyperparam_search(cfg,cube, X,Y):
     for vals in itertools.product(*search_space.values()):
         params = dict(zip(search_space.keys(), vals))
 
-        score = validation_score(params)  # replace with real val
+        score = validation_score(params,cube,X,Y)  # replace with real val
         records.append({**params, "score": score})
 
         if score > best_score:
