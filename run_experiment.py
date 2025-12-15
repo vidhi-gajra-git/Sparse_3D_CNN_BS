@@ -62,7 +62,7 @@ for run_id in range(N_RUNS):
     size_mb = model_size_mb(model)
 
     # ---------- Band importance ----------
-    band_imp = compute_band_importance(A)
+    band_imp = get_band_importance_from_dict(A, method='l1')
     band_metrics_all.append(band_imp)
 
     # ---------- Classifier evaluation ----------
