@@ -334,5 +334,64 @@ def show_high_noise_band_images(cube, recon_cube, rmse_per_band, top_n=6, save_d
         if save_dir:
             plt.savefig(f"{save_dir}/band_{b:03d}_noise.png", dpi=200)
         plt.show()
+lambda_msssim = 1e-3
+
+# ----------------------- Utilities (SSIM approx, SAM) -----------------------
+def _gaussian_kernel(window_size=11, sigma=1.5, channels=1, device='cpu', dtype=torch.float32):
+    coords = torch.arange(window_size, dtype=dtype, device=device) - (window_size - 1) / 2.0
+    g = torch.exp(-(coords**2) / (2 * sigma * sigma))
+    g = g / g.sum()
+    kernel_1d = g.unsqueeze(1) @ g.unsqueeze(0)
+    kernel = kernel_1d / kernel_1d.sum()
+    kernel = kernel.unsqueeze(0).unsqueeze(0).repeat(channels, 1, 1, 1)
+    return kernel
+
+def ssim_index(img1, img2, window_size=11, sigma=1.5, L=1.0, K=(0.01, 0.03), device=None):
+    if device is None:
+        device = img1.device
+    C1 = (K[0]*L)**2
+    C2 = (K[1]*L)**2
+    channels = img1.shape[1]
+    kernel = _gaussian_kernel(window_size=window_size, sigma=sigma, channels=channels, device=device, dtype=img1.dtype)
+    padding = window_size // 2
+
+    mu1 = F.conv2d(img1, kernel, padding=padding, groups=channels)
+    mu2 = F.conv2d(img2, kernel, padding=padding, groups=channels)
+    mu1_sq = mu1 * mu1
+    mu2_sq = mu2 * mu2
+    mu1_mu2 = mu1 * mu2
+
+    sigma1_sq = F.conv2d(img1*img1, kernel, padding=padding, groups=channels) - mu1_sq
+    sigma2_sq = F.conv2d(img2*img2, kernel, padding=padding, groups=channels) - mu2_sq
+    sigma12 = F.conv2d(img1*img2, kernel, padding=padding, groups=channels) - mu1_mu2
+
+    ssim_map = ((2*mu1_mu2 + C1) * (2*sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2) + 1e-12)
+    return ssim_map.mean()
+
+def msssim_index(img1, img2, levels=3, window_size=11, sigma=1.5, L=1.0):
+    vals = []
+    a1, a2 = 0.8, 0.2
+    weights = [a1] + [a2/(levels-1)]*(levels-1)
+    cur1, cur2 = img1, img2
+    for l in range(levels):
+        s = ssim_index(cur1, cur2, window_size=window_size, sigma=sigma, L=L, device=cur1.device)
+        vals.append(float(s))
+        if l < levels-1:
+            cur1 = F.avg_pool2d(cur1, kernel_size=2, stride=2, padding=0)
+            cur2 = F.avg_pool2d(cur2, kernel_size=2, stride=2, padding=0)
+    ms = sum(w*v for w,v in zip(weights, vals))
+    return torch.tensor(ms, device=img1.device)
+def sam_loss(recon_flat, target_flat, mode='cosine'):
+    eps = 1e-8
+    r = recon_flat
+    t = target_flat
+    dot = (r * t).sum(dim=1)
+    rn = torch.norm(r, dim=1)
+    tn = torch.norm(t, dim=1)
+    cos = dot / (rn * tn + eps)
+    cos = torch.clamp(cos, -1.0, 1.0)
+    ang = torch.acos(cos)
+    return ang.mean()
+
 
 
