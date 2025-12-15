@@ -76,7 +76,7 @@ def validation_score(
 
     return score
 
-def run_hyperparam_search(cfg):
+def run_hyperparam_search(cfg,cube, X,Y):
     search_space = {
         "latent_dim": [128, 256, 384],
         "decoder_dropout": [0.0, 0.1],
