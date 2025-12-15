@@ -47,10 +47,10 @@ cube, X, Y = load_hsi(mat_path, gt_path)
 
 results = []
 band_metrics_all = []
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # ---------------- Optional hyperparameter search ----------------
 if cfg["experiment"]["hyperparam_search"]:
-    search_df, best_params = run_hyperparam_search(cfg,cube,X,Y)
+    search_df, best_params = run_hyperparam_search(cfg,cube,X,Y,device)
     search_df.to_csv(f"{data_name}/runs/{exp_name}/hyperparam_search.csv", index=False)
     cfg["model"].update(best_params)
 
@@ -60,7 +60,7 @@ for run_id in range(N_RUNS):
     start_time = time.time()
 
     model = HybridModel(**cfg["model"])
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
     model, Z, C, A, history, recon = train_model(
