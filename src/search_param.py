@@ -10,14 +10,21 @@ from sklearn.ensemble import RandomForestClassifier
 def validation_score(
     params,
     cube, X, Y,
-    train_idx, val_idx,
+   
     device,
     fixed_topk=20
 ):
     """
     Returns a single scalar validation score for hyperparameter search.
     """
+    val_frac=0.2
+    H, W, B =cube.shape
+    n_val = int(np.ceil(val_frac * B))
+    val_idx = indices[:n_val]
+    train_idx = indices[n_val:]
 
+    patches_train = patches[train_idx].to(device)
+    targets_train = targets[train_idx].to(device)
     # -------- build model --------
     model = HybridModel(
         window_size=params["window_size"],
