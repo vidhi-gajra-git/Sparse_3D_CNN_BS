@@ -50,7 +50,7 @@ band_metrics_all = []
 
 # ---------------- Optional hyperparameter search ----------------
 if cfg["experiment"]["hyperparam_search"]:
-    search_df, best_params = run_hyperparam_search(cfg)
+    search_df, best_params = run_hyperparam_search(cfg,cube,X,Y)
     search_df.to_csv(f"{data_name}/runs/{exp_name}/hyperparam_search.csv", index=False)
     cfg["model"].update(best_params)
 
