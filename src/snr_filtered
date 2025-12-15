@@ -1,0 +1,192 @@
+import numpy as np
+import torch
+
+# ---------------------------------------------------------------
+# SAFE WINDOW: ensures window_size <= B and odd-sized
+# ---------------------------------------------------------------
+def safe_window(Bf, base_window):
+    """
+    Ensures the window size is <= number of bands and odd.
+    If base_window is too large, shrink it safely.
+    """
+    w = min(base_window, Bf)
+
+    # make odd
+    if w % 2 == 0:
+        w -= 1
+    if w < 1:
+        w = 1
+
+    return w
+
+
+# ---------------------------------------------------------------
+# RAW SNR COMPUTATION FROM ORIGINAL CUBE  (SHAPE SAFE)
+# ---------------------------------------------------------------
+def compute_raw_snr(cube):
+    """
+    Robust per-band SNR estimator based ONLY on the raw cube.
+    Output snr_db has shape (B,) exactly.
+    
+    Method:
+        signal_var[b] = var across all pixels in band b
+        noise_var[b] = variance of spectral differences with neighbors
+    """
+    H, W, B = cube.shape
+    X = cube.reshape(-1, B)    # (Npix, B)
+    eps = 1e-12
+
+    # 1) SIGNAL VAR
+    signal_var = np.var(X, axis=0) + eps   # shape (B,)
+
+    # 2) NOISE VAR
+    noise_var = np.zeros(B)
+
+    # band 0 uses diff to band 1
+    noise_var[0] = np.var(X[:, 1] - X[:, 0]) + eps
+
+    # band B-1 uses diff to band B-2
+    noise_var[-1] = np.var(X[:, -1] - X[:, -2]) + eps
+
+    # interior bands use average of left/right diffs
+    for b in range(1, B - 1):
+        left = X[:, b] - X[:, b - 1]
+        right = X[:, b + 1] - X[:, b]
+        noise_var[b] = (np.var(left) + np.var(right)) / 2.0 + eps
+
+    # 3) SNR
+    snr_linear = signal_var / noise_var
+    snr_db = 10 * np.log10(snr_linear + eps)
+
+    return snr_db   # shape (B,)
+
+
+# ---------------------------------------------------------------
+# FILTER + RETRAIN MODEL
+# ---------------------------------------------------------------
+def filter_bands_and_retrain(
+    cube,
+    raw_snr_db,         # <- correct raw SNR
+    remove_pct=0.20,
+    method='snr',
+    base_window=5,
+    base_latent=256,
+    epochs2=20,
+    lr2=1e-3,
+    verbose=True
+):
+    """
+    RETURNS:
+      keep_idx              -> surviving band indices into ORIGINAL cube
+      cube_filtered         -> (H, W, Bf)
+      retrain_pack          -> model2, Z2, C2, A2, history2, recon2, rmse2, snr2
+    """
+
+    H, W, B = cube.shape
+
+    # --------------------------------------------------
+    # 1) SELECT BANDS TO DROP
+    # --------------------------------------------------    
+    n_remove = int(np.round(remove_pct * B))
+    if n_remove <= 0 or n_remove >= B:
+        raise ValueError("remove_pct too small or too large.")
+
+    if method == 'snr':
+        # remove lowest SNR bands
+        order = np.argsort(raw_snr_db)
+        remove_idx = order[:n_remove]
+    else:
+        raise ValueError("method must be 'snr'.")
+
+    keep_idx = np.setdiff1d(np.arange(B), remove_idx)
+    keep_idx = np.sort(keep_idx)
+
+    if verbose:
+        print(f"\n=== FILTERING BANDS BY RAW SNR ===")
+        print(f"Removing {n_remove}/{B} bands. Remaining: {len(keep_idx)}")
+        print("Lowest-SNR removed indices:", remove_idx[:])
+
+    # --------------------------------------------------
+    # 2) BUILD FILTERED CUBE
+    # --------------------------------------------------
+    cube_filtered = cube[:, :, keep_idx].copy()
+    Bf = cube_filtered.shape[2]
+
+    # --------------------------------------------------
+    # 3) ADAPT MODEL PARAMETERS FOR SMALLER B
+    # --------------------------------------------------
+    window_size2 = safe_window(Bf, base_window)
+    latent_dim2 = int(base_latent * (Bf / B))     # scale latent with #bands
+    latent_dim2 = max(32, latent_dim2)
+
+    decoder_hidden_mult2 = 4 if Bf < 80 else 6
+
+    if verbose:
+        print(f"Filtered B={Bf}. window={window_size2}, latent={latent_dim2}, hidden_mult={decoder_hidden_mult2}")
+
+    # --------------------------------------------------
+    # 4) CREATE + TRAIN MODEL
+    # --------------------------------------------------
+    model2 = HybridModel(
+        window_size=window_size2,
+        H=H,
+        W=W,
+        latent_dim=latent_dim2,
+        use_attention=False,
+        decoder_dropout=0.0,
+        decoder_hidden_mult=decoder_hidden_mult2
+    )
+    model2.to(device)
+
+    model2, Z2, C2, A2, history2, recon_cube2 = train_model(
+        model2,
+        cube_filtered,
+        epochs=epochs2,
+        batch_size=12,
+        lr=lr2,
+        alpha=5.0,
+        beta=1e-4,
+        device=device,
+        verbose=verbose,
+        C_lr_mult=5.0,
+        C_init_scale=5e-2,
+        lambda_l1=5e-4,
+        lambda_tv=5e-4,
+        memory_cautious=True,
+        auto_scale_alpha=True,
+        desired_self_ratio=1.0,
+        normalize_Z_for_C=False,
+        lambda_C_l1=1e-3,
+        use_proximal_C=False
+    )
+
+    # --------------------------------------------------
+    # 5) RECOMPUTE RMSE + SNR FOR FILTERED MODEL
+    # --------------------------------------------------
+    rmse2, snr2 = compute_per_band_rmse_and_snr(cube_filtered, recon_cube2)
+
+    retrain_pack = (model2, Z2, C2, A2, history2, recon_cube2, rmse2, snr2)
+    return keep_idx, cube_filtered, retrain_pack
+
+
+# ---------------------------------------------------------------
+# EXAMPLE USAGE
+# ---------------------------------------------------------------
+raw_snr_db = compute_raw_snr(cube)
+
+keep_idx, cube_filtered, retrain_pack = filter_bands_and_retrain(
+    cube,
+    raw_snr_db,
+    remove_pct=0.10,
+    method='snr',
+    base_window=5,
+    base_latent=128,
+    epochs2=12
+)
+
+model2, Z2, C2, A2, hist2, recon2, rmse2, snr2 = retrain_pack
+topk_filtered_rel = select_topk_bands_from_A(A2, k=k)
+
+    # map topk back to original band indices
+topk_mapped_orig = keep_idx[topk_filtered_rel]
+test_selected_bands(X, Y,sorted(topk_mapped_orig) )
