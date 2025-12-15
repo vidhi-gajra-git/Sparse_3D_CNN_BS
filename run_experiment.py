@@ -5,7 +5,7 @@ import torch
 from src.data import load_hsi
 from src.model import HybridModel
 from src.train import train_model
-from src.utils import plot_epoch_history, compute_per_band_rmse_and_snr, plot_rmse_snr, compute_band_importance
+from src.utils import plot_epoch_history, compute_per_band_rmse_and_snr, plot_rmse_snr, get_band_importance_from_dict
 from src.classifiers import evaluate_classifiers
 from src.search_param import run_hyperparam_search
 from src.utils import model_size_mb, save_training_plots
