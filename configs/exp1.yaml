@@ -32,8 +32,8 @@ band_selection:
   topk: [20, 25, 30]
 
 data:
-  mat_path: data/hyperspectral_image.mat
-  gt_path: data/ground_truth.mat
+  mat_path: data/Indian_pines_corrected.mat
+  gt_path: data/Indian_pines_gt.mat
   dataset: Indian_pines
 
 classifiers:
