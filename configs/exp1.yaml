@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp6
+  name: exp7
   runs: 5
   hyperparam_search: false
 
@@ -28,9 +28,9 @@ regularization:
   lambda_msssim:  1e-3
   msssim_levels:  5
   auto_scale_alpha: true
-  normalize_Z_for_C: false
+  normalize_Z_for_C: true
   lambda_C_l1: 1e-3
-  use_proximal_C : false
+  use_proximal_C : true
   
 
 band_selection:
