@@ -73,7 +73,7 @@ class DecoderFromLatent(nn.Module):
 class SpectralAttention(nn.Module):
     def __init__(self, dim, nheads=2, dropout=0):
         super().__init__()
-        self.mha = nn.MultiheadAttention(embed_dim=dim, num_heads=nheads, dropout=0.1, batch_first=True)
+        self.mha = nn.MultiheadAttention(embed_dim=dim, num_heads=nheads, dropout=0.0, batch_first=True)
         self.ln1 = nn.LayerNorm(dim)
         self.ff = nn.Sequential(nn.Linear(dim, dim*2), nn.ReLU(inplace=True), nn.Linear(dim*2, dim))
         self.ln2 = nn.LayerNorm(dim)
@@ -88,7 +88,7 @@ class SpectralAttention(nn.Module):
         return seq.squeeze(0)
 
 class HybridModel(nn.Module):
-    def __init__(self, window_size, H, W, latent_dim=64, use_attention=False,
+    def __init__(self, window_size, H, W, latent_dim=64, use_attention=True,
                  decoder_dropout=0.2, decoder_hidden_mult=3):
         super().__init__()
         self.window_size = window_size
