@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp4
+  name: exp5
   runs: 5
   hyperparam_search: false
 
@@ -24,10 +24,10 @@ regularization:
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1e-1
-  C_lr_mult: 10.0
+  C_lr_mult: 7.0
   lambda_msssim:  1e-3
   msssim_levels:  5
-  auto_scale_alpha: true
+  auto_scale_alpha: false
   normalize_Z_for_C: false
   lambda_C_l1: 1e-3
   use_proximal_C : false
