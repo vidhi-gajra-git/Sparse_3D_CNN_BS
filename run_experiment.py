@@ -133,6 +133,46 @@ for r in clf_results:
     })
     results.append(r)
 
-# ---------------- Save CSVs ----------------
-pd.DataFrame(results).to_csv(f"{data_name}/runs/{exp_name}/results.csv", index=False)
-pd.DataFrame(band_metrics_all).to_csv(f"{data_name}/runs/{exp_name}/band_metrics.csv", index=False)
+# ---------------- Save per-run results ----------------
+results_df = pd.DataFrame(results)
+results_df.to_csv(
+    f"{data_name}/runs/{exp_name}/results_per_run.csv",
+    index=False
+)
+
+# ---------------- Compute averages across runs ----------------
+avg_df = (
+    results_df
+    .groupby(["classifier", "num_bands"])
+    .agg(
+        OA_mean=("OA", "mean"),
+        OA_std=("OA", "std"),
+        AA_mean=("AA", "mean"),
+        AA_std=("AA", "std"),
+        Kappa_mean=("Kappa", "mean"),
+        Kappa_std=("Kappa", "std"),
+        train_time_mean=("train_time_sec", "mean"),
+        model_size_mb_mean=("model_size_mb", "mean")
+    )
+    .reset_index()
+)
+
+avg_df["experiment"] = exp_name
+avg_df["num_runs"] = N_RUNS
+
+avg_df.to_csv(
+    f"{data_name}/runs/{exp_name}/results_avg.csv",
+    index=False
+)
+band_imp_df = pd.DataFrame(band_metrics_all)
+band_imp_df.to_csv(
+    f"{data_name}/runs/{exp_name}/band_metrics_per_run.csv",
+    index=False
+)
+
+band_imp_mean = band_imp_df.mean(axis=0)
+band_imp_mean.to_frame("mean_importance").to_csv(
+    f"{data_name}/runs/{exp_name}/band_metrics_avg.csv"
+)
+
+
