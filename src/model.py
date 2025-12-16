@@ -88,7 +88,7 @@ class SpectralAttention(nn.Module):
         return seq.squeeze(0)
 
 class HybridModel(nn.Module):
-    def __init__(self, window_size, H, W, latent_dim=64, use_attention=True,
+    def __init__(self, window_size, H, W, latent_dim=64, use_attention=False,
                  decoder_dropout=0.2, decoder_hidden_mult=3):
         super().__init__()
         self.window_size = window_size
