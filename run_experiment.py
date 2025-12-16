@@ -70,7 +70,6 @@ for run_id in range(N_RUNS):
         device=device,
         **cfg["training"],
         **cfg["regularization"],
-        patience=5,
         min_delta=1e-4,
         
     )
