@@ -60,7 +60,7 @@ for run_id in range(N_RUNS):
     start_time = time.time()
     H,W,B=cube.shape
 
-    model = HybridModel(**cfg["model"])
+    model = HybridModel(**cfg["model"],H=H,W=W)
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
