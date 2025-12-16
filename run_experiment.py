@@ -87,6 +87,7 @@ for run_id in range(N_RUNS):
             "C_init_scale",
             "C_lr_mult",
             "lambda_msssim",
+            "lambda_C_l1"
         ]
     )
 
