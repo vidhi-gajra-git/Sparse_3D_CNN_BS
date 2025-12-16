@@ -24,8 +24,8 @@ def validation_score(
     val_idx = indices[:n_val]
     train_idx = indices[n_val:]
 
-    patches_train = patches[train_idx].to(device)
-    targets_train = targets[train_idx].to(device)
+    # patches_train = patches[train_idx].to(device)
+    # targets_train = targets[train_idx].to(device)
     # -------- build model --------
     model = HybridModel(
         window_size=params["window_size"],
