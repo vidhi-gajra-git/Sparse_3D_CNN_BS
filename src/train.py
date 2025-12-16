@@ -60,24 +60,48 @@ def prox_soft_threshold_offdiag_(C_tensor, tau):
         C_tensor.data.fill_diagonal_(0.0)
 
 # ----------------------- Training (minibatch-safe, no in-place) -----------------------
-def train_model(model, hsi: np.ndarray,
-                epochs=100, batch_size=16, lr=1e-3,
-                alpha=1.0, beta=1e-4, device=None,
-                verbose=True, C_lr_mult=5.0, C_init_scale=1e-2,
-                lambda_l1=1e-3, lambda_tv=5e-4, val_frac=0.2,
-                memory_cautious=True, auto_scale_alpha=True, desired_self_ratio=1.0,
-                normalize_Z_for_C=False,
-                # NEW args to control C regularization and proximal step
-                lambda_C_l1=0.0,        # L1 weight on off-diagonal entries (added to loss)
-                use_proximal_C=False,   # if True, apply proximal operator (soft-threshold) after each opt.step
-                prox_tau_scale=0.5,
-                lambda_msssim: float = 1e-3,
-msssim_levels: int = 5,
-lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
-    sam_mode:str ='cosine',
-    early_stopping=True,
-    patience=5,
-    min_delta=1e-4):    # relative to exp(log_C_scale) to compute tau
+def train_model(
+    model,
+    hsi: np.ndarray,
+    epochs: int = 100,
+    batch_size: int = 16,
+    lr: float = 1e-3,
+
+    alpha: float = 1.0,
+    beta: float = 1e-4,
+    device=None,
+    verbose: bool = True,
+
+    C_lr_mult: float = 5.0,
+    C_init_scale: float = 1e-2,
+
+    lambda_l1: float = 1e-3,
+    lambda_tv: float = 5e-4,
+    val_frac: float = 0.2,
+
+    memory_cautious: bool = True,
+    auto_scale_alpha: bool = True,
+    desired_self_ratio: float = 1.0,
+    normalize_Z_for_C: bool = False,
+
+    # ---- C regularization / proximal ----
+    lambda_C_l1: float = 0.0,
+    use_proximal_C: bool = False,
+    prox_tau_scale: float = 0.5,
+
+    # ---- Perceptual / spectral losses ----
+    lambda_msssim: float = 1e-3,
+    msssim_levels: int = 5,
+    lambda_sam: float = 1e-3,
+    sam_mode: str = "cosine",
+
+    # ---- Early stopping ----
+    early_stopping: bool = True,
+    patience: int = 5,
+    min_delta: float = 1e-4,
+):
+    ...
+   # relative to exp(log_C_scale) to compute tau
     """
     Returns: (model, Z_full_np, C_final_np, A_raw_np, history, recon_cube)
     history is a dict with epoch-wise metrics.
