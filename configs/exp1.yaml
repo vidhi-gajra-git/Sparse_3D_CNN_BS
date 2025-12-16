@@ -23,11 +23,11 @@ regularization:
   beta: 1e-5
   lambda_l1: 5e-4
   lambda_tv: 5e-4
-  C_init_scale: 1e-1
-  C_lr_mult: 7.0
+  C_init_scale: 1
+  C_lr_mult: 20.0
   lambda_msssim:  1e-3
   msssim_levels:  5
-  auto_scale_alpha: false
+  auto_scale_alpha: true
   normalize_Z_for_C: false
   lambda_C_l1: 1e-3
   use_proximal_C : false
