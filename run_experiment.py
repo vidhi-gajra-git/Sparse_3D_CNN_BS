@@ -118,7 +118,7 @@ for run_id in range(N_RUNS):
     clf_results = evaluate_classifiers(
     X=X,
     Y=Y,
-    ranked_bands=band_imp,
+    band_imp=band_imp,
     band_sizes=(20, 25, 30),
     classifiers=cfg["classifiers"]
 )
