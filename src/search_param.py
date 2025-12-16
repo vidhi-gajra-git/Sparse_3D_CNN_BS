@@ -40,7 +40,7 @@ def validation_score(
     # -------- train model --------
     model, Z, C, A, history, recon = train_model(
         model=model,
-        cube=cube,
+        hsi=cube,
         epochs=10,                  # SHORT training for search
         batch_size=16,
         lr=params["lr"],
