@@ -2,7 +2,8 @@ import scipy.io
 # import math
 # import copy
 
-from sklearn.metrics import accuracy_score, cohen_kappa_score
+from sklearn.metrics import accuracy_score, cohen_kappa_score,confusion_matrix
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
