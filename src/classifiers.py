@@ -1,5 +1,7 @@
 import time
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -13,26 +15,38 @@ def average_accuracy(y_true, y_pred):
     return class_acc.mean()
 
 
+def plot_band_importance(band_imp, title="Band importance"):
+    plt.figure(figsize=(12, 4))
+    plt.plot(band_imp, marker="o", linewidth=1)
+    plt.xlabel("Band index")
+    plt.ylabel("Importance score")
+    plt.title(title)
+    plt.grid(alpha=0.3)
+    plt.show()   # 👈 REQUIRED for Kaggle inline display
+
+
 def evaluate_classifiers(
     X, Y,
     band_imp,
     band_sizes=(20, 25, 30),
     classifiers=("rf", "svc", "knn"),
     test_size=0.2,
-    random_state=42
+    random_state=42,
+    show_plots=True
 ):
     results = []
 
-    # 🔑 ranked_bands MUST already be band indices sorted by importance
+    # ---- show band-importance plot ONCE ----
+    if show_plots:
+        plot_band_importance(band_imp)
+
+    ranked_bands = np.argsort(band_imp)
+
     for k in band_sizes:
-        ranked_bands=np.argsort(band_imp)
         selected_bands = ranked_bands[-k:][::-1]
         selected_bands = sorted(selected_bands.tolist())
 
-        print(
-    f"↗️ selected_bands (top-{k}) = {selected_bands}\n"
-    f"ranked_band_indices (low→high) = {ranked_bands}"
-)
+        print(f"↗️ selected_bands (top-{k}) = {selected_bands}")
 
         Xk = X[:, selected_bands]
 
@@ -51,7 +65,7 @@ def evaluate_classifiers(
                 clf = RandomForestClassifier(
                     n_estimators=200,
                     random_state=42,
-                   
+                    n_jobs=-1
                 )
 
             elif clf_name == "svc":
@@ -84,12 +98,9 @@ def evaluate_classifiers(
             elapsed = time.time() - start
 
             print(
-                f"Classifier={clf_name}, "
-                f"bands={k}, "
-                f"OA={oa:.4f}, "
-                f"AA={aa:.4f}, "
-                f"Kappa={kappa:.4f}, "
-                f"time={elapsed:.2f}s"
+                f"Classifier={clf_name}, bands={k}, "
+                f"OA={oa:.4f}, AA={aa:.4f}, "
+                f"Kappa={kappa:.4f}, time={elapsed:.2f}s"
             )
 
             results.append({
