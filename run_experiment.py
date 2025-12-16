@@ -12,6 +12,11 @@ from src.search_param import run_hyperparam_search
 
 # ---------------- Load config ----------------
 import torch
+def cast_to_float(d, keys):
+    for k in keys:
+        if k in d:
+            d[k] = float(d[k])
+
 
 def model_size_mb(model):
     """
@@ -63,6 +68,23 @@ for run_id in range(N_RUNS):
     model = HybridModel(**cfg["model"],H=H,W=W)
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
+    cast_to_float(
+    cfg["training"],
+    ["lr", "min_delta"]
+        )
+
+    cast_to_float(
+        cfg["regularization"],
+        [
+            "alpha",
+            "beta",
+            "lambda_l1",
+            "lambda_tv",
+            "C_init_scale",
+            "C_lr_mult",
+            "lambda_msssim",
+        ]
+    )
 
     model, Z, C, A, history, recon = train_model(
         model=model,
