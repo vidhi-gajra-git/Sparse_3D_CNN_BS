@@ -24,7 +24,7 @@ regularization:
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1e-1
-  C_lr_mult: 50.0
+  C_lr_mult: 5.0
   lambda_msssim:  1e-3
   msssim_levels:  5
 
