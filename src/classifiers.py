@@ -42,7 +42,7 @@ def evaluate_classifiers(
                 )
             elif clf_name == "knn":
                 clf = KNeighborsClassifier(
-                    n_neighbors=Y.nunique()
+                    n_neighbors=len(np.unique(Y))
                 )
             else:
                 continue
@@ -53,7 +53,13 @@ def evaluate_classifiers(
             oa = accuracy_score(Y, y_pred)
             aa = average_accuracy(Y, y_pred)
             kappa = cohen_kappa_score(Y, y_pred)
-
+            print("classifier:", clf_name,
+                "num_bands :", k,
+                "OA :", oa,
+                "AA :", aa,
+                "Kappa :",kappa,
+                "classifier_time_sec :", time.time() - start,
+                "selected_bands : ", selected_bands)
             results.append({
                 "classifier": clf_name,
                 "num_bands": k,
