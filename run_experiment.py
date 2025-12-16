@@ -94,11 +94,11 @@ for run_id in range(N_RUNS):
         **cfg["regularization"],
        
     )
-    plot_epoch_history(history, savefile='{data_name}/runs/{exp_name}/{run_id}_training_history.png')
+    plot_epoch_history(history, savefile=f'{data_name}/runs/{exp_name}/{run_id}_training_history.png')
 
 # compute per-band RMSE and SNR (use all pixels mask)
     rmse_per_band, snr_db = compute_per_band_rmse_and_snr(cube, recon, mask=None)
-    plot_rmse_snr(rmse_per_band, snr_db, importance=band_imp, savefile='{data_name}/runs/{exp_name}/{run_id}_rmse_snr.png')
+    plot_rmse_snr(rmse_per_band, snr_db, importance=band_imp, savefile=f'{data_name}/runs/{exp_name}/{run_id}_rmse_snr.png')
 
     train_time = time.time() - start_time
     size_mb = model_size_mb(model)
