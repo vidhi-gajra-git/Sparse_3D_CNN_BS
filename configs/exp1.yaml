@@ -7,7 +7,7 @@ experiment:
 training:
   epochs: 40
   batch_size: 8
-  lr: 1e-4
+  lr: 1e-3
   early_stopping: false
   patience: 6
   min_delta: 1e-3
@@ -24,7 +24,7 @@ regularization:
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1e-1
-  C_lr_mult: 10.0
+  C_lr_mult: 1.0
   lambda_msssim:  1e-4
   msssim_levels:  5
   auto_scale_alpha: false
