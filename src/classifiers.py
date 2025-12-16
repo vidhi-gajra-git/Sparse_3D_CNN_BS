@@ -19,9 +19,9 @@ def evaluate_classifiers(
     results = []
 
     for k in band_sizes:
-        selected_bands = ranked_bands[:k].tolist()
-        print(f"↗️ selected_bands = {selected_bands}")
-        Xk = X[:, selected_bands]
+        selected_bands = np.argsort(ranked_bands.tolist())
+        print(f"↗️ selected_bands = {selected_bands[:k]}")
+        Xk = X[:, selected_bands[:k]]
 
         for clf_name in classifiers:
             start = time.time()
