@@ -66,7 +66,7 @@ for run_id in range(N_RUNS):
 
     model, Z, C, A, history, recon = train_model(
         model=model,
-        cube=cube,
+        hsi=cube,
         device=device,
         **cfg["training"],
         **cfg["regularization"],
