@@ -87,6 +87,7 @@ lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
     device = device or (torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu'))
     model.to(device)
     H, W, B = hsi.shape
+    print(H,W,B)
     ds_full = BandPatchDataset(hsi, window_size=model.window_size)
 
     # Build full arrays (B is typically small enough)
