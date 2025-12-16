@@ -47,7 +47,8 @@ def evaluate_classifiers(
         selected_bands = ranked_bands[-k:][::-1]
         selected_bands = sorted(selected_bands.tolist())
 
-        print(f"↗️ selected_bands (top-{k}) = {selected_bands}")
+        print(f"↗️ selected_bands (top-{k}) = {selected_bands}\n
+        🔗 band_imp = band_imp[:selected_bands]")
 
         Xk = X[:, selected_bands]
 
@@ -65,12 +66,9 @@ def evaluate_classifiers(
                 )
 
             elif clf_name == "svc":
-                clf = SVC(
-                    C=1000,
-                    kernel="rbf",
-                    gamma="scale",
-                    class_weight="balanced"
-                )
+          
+                 clf=SVC(kernel='rbf', C=1000, gamma='scale', class_weight='balanced')
+                
 
             elif clf_name == "knn":
                 n_classes = len(np.unique(Y_train))
