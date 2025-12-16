@@ -58,6 +58,10 @@ if cfg["experiment"]["hyperparam_search"]:
     search_df, best_params = run_hyperparam_search(cfg,cube,X,Y,device)
     search_df.to_csv(f"{data_name}/runs/{exp_name}/hyperparam_search.csv", index=False)
     cfg["model"].update(best_params)
+# -------------------Creating the folders for saving the data---------------------
+
+out_dir = f"{cfg['data']['dataset']}/runs/{cfg['experiment']['name']}"
+os.makedirs(out_dir, exist_ok=True)
 
 # ---------------- Main loop ----------------
 for run_id in range(N_RUNS):
@@ -94,6 +98,8 @@ for run_id in range(N_RUNS):
         **cfg["regularization"],
        
     )
+
+    
     plot_epoch_history(history, savefile=f'{data_name}/runs/{exp_name}/{run_id}_training_history.png')
 
 # compute per-band RMSE and SNR (use all pixels mask)
