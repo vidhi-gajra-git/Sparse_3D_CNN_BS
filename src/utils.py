@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 # import pandas as pd
-# import torch.nn.functional as F
+import torch.nn.functional as F
 # from torch.utils.data import Dataset, DataLoader, TensorDataset
 import numpy as np
 from sklearn.cluster import SpectralClustering
