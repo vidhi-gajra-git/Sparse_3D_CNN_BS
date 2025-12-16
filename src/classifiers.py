@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, cohen_kappa_score
 from sklearn.model_selection import train_test_split
+from data import split_XY
 
 
 def average_accuracy(y_true, y_pred):
@@ -51,12 +52,7 @@ def evaluate_classifiers(
         Xk = X[:, selected_bands]
 
         # ---- train / test split ----
-        X_train, X_test, Y_train, Y_test = train_test_split(
-            Xk, Y,
-            test_size=test_size,
-            stratify=Y,
-            random_state=random_state
-        )
+        X_train, X_test, Y_train, Y_test = split_XY(Xk, Y, test_size=0.2)
 
         for clf_name in classifiers:
             start = time.time()
@@ -65,7 +61,7 @@ def evaluate_classifiers(
                 clf = RandomForestClassifier(
                     n_estimators=200,
                     random_state=42,
-                    n_jobs=-1
+                  
                 )
 
             elif clf_name == "svc":
