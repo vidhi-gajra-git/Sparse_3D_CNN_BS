@@ -1,12 +1,12 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp7
+  name: exp8
   runs: 5
   hyperparam_search: false
 
 training:
   epochs: 20
-  batch_size: 16
+  batch_size: 8
   lr: 1e-3
   early_stopping: false
   patience: 6
@@ -25,7 +25,7 @@ regularization:
   lambda_tv: 5e-4
   C_init_scale: 1
   C_lr_mult: 20.0
-  lambda_msssim:  1e-3
+  lambda_msssim:  1e-4
   msssim_levels:  5
   auto_scale_alpha: true
   normalize_Z_for_C: true
