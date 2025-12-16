@@ -71,7 +71,7 @@ class DecoderFromLatent(nn.Module):
         return self.net(z)
 
 class SpectralAttention(nn.Module):
-    def __init__(self, dim, nheads=4, dropout=0.1):
+    def __init__(self, dim, nheads=2, dropout=0.2):
         super().__init__()
         self.mha = nn.MultiheadAttention(embed_dim=dim, num_heads=nheads, dropout=dropout, batch_first=True)
         self.ln1 = nn.LayerNorm(dim)
