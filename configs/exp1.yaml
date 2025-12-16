@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp10
+  name: exp11
   runs: 5
   hyperparam_search: false
 
@@ -10,7 +10,7 @@ training:
   lr: 1e-4
   early_stopping: false
   patience: 6
-  min_delta: 1e-4
+  min_delta: 1e-3
 
 model:
   window_size: 5
@@ -29,7 +29,7 @@ regularization:
   msssim_levels:  5
   auto_scale_alpha: false
   normalize_Z_for_C: false
-  lambda_C_l1: 1e-4
+  lambda_C_l1: 1e-3
   use_proximal_C : false
   
 
