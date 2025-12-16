@@ -58,7 +58,7 @@ if cfg["experiment"]["hyperparam_search"]:
 for run_id in range(N_RUNS):
     
     start_time = time.time()
-    H,W,B=cube.shape()
+    H,W,B=cube.shape
 
     model = HybridModel(**cfg["model"])
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
