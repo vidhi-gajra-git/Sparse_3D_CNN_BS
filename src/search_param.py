@@ -53,7 +53,7 @@ def validation_score(
         lambda_msssim=params["lambda_msssim"],
         msssim_levels=params["msssim_levels"],
         device=device,
-        verbose=False
+        verbose=True
     )
 
     # -------- band selection --------
