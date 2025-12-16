@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp5
+  name: exp6
   runs: 5
   hyperparam_search: false
 
