@@ -122,7 +122,7 @@ lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
 
     # init C on same device as model (to avoid frequent moves)
     if model.C is None:
-        print(C_init_scale,type(C_init_scale)
+        print(C_init_scale,type(C_init_scale))
         model.init_C(num_bands=int(B), device=device, init_scale=C_init_scale, add_learnable_scale=True)
         # set starting scale to modest value so C isn't tiny
         with torch.no_grad():
