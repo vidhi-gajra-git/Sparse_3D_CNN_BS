@@ -45,7 +45,7 @@ def evaluate_classifiers(
 
     for k in band_sizes:
         selected_bands = ranked_bands[-k:][::-1]
-        print(f"🔗 band_imp = {band_imp[selected_bands.tolist()]")
+        print(f"🔗 band_imp = {band_imp[selected_bands.tolist()]}")
         selected_bands = sorted(selected_bands.tolist())
         
 
