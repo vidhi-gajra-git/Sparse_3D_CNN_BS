@@ -5,9 +5,9 @@ experiment:
   hyperparam_search: false
 
 training:
-  epochs: 25
+  epochs: 40
   batch_size: 8
-  lr: 1e-3
+  lr: 1e-4
   early_stopping: false
   patience: 6
   min_delta: 1e-4
