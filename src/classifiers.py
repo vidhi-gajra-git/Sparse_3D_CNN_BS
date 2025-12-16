@@ -20,6 +20,7 @@ def evaluate_classifiers(
 
     for k in band_sizes:
         selected_bands = ranked_bands[:k].tolist()
+        print(f"↗️ selected_bands = {selected_bands}")
         Xk = X[:, selected_bands]
 
         for clf_name in classifiers:
