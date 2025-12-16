@@ -20,8 +20,10 @@ def evaluate_classifiers(
 
     for k in band_sizes:
         selected_bands = np.argsort(ranked_bands.tolist())
-        print(f"↗️ selected_bands = {selected_bands[:k]}")
-        Xk = X[:, selected_bands[:k]]
+        
+        bands=sorted(selected_bands[:k])
+        print(f"↗️ selected_bands = {bands}")
+        Xk = X[:,bands ]
 
         for clf_name in classifiers:
             start = time.time()
@@ -35,7 +37,8 @@ def evaluate_classifiers(
                 clf = SVC(
                     C=1000,
                     kernel="rbf",
-                    gamma="scaled"
+                    gamma="scale",
+                    class_weight='balanced'
                 )
             elif clf_name == "knn":
                 clf = KNeighborsClassifier(
