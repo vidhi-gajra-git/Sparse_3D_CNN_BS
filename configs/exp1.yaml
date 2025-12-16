@@ -1,11 +1,11 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp8
+  name: exp9
   runs: 5
   hyperparam_search: false
 
 training:
-  epochs: 20
+  epochs: 25
   batch_size: 8
   lr: 1e-3
   early_stopping: false
@@ -24,13 +24,13 @@ regularization:
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1
-  C_lr_mult: 20.0
+  C_lr_mult: 10.0
   lambda_msssim:  1e-4
   msssim_levels:  5
   auto_scale_alpha: true
-  normalize_Z_for_C: true
+  normalize_Z_for_C: false
   lambda_C_l1: 1e-3
-  use_proximal_C : true
+  use_proximal_C : false
   
 
 band_selection:
