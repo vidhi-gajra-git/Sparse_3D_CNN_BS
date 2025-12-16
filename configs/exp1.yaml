@@ -2,7 +2,7 @@
 experiment:
   name: exp1
   runs: 5
-  hyperparam_search: true
+  hyperparam_search: false
 
 training:
   epochs: 20
