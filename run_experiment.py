@@ -70,8 +70,7 @@ for run_id in range(N_RUNS):
         device=device,
         **cfg["training"],
         **cfg["regularization"],
-        min_delta=1e-4,
-        
+       
     )
     plot_epoch_history(history, savefile='{data_name}/runs/{exp_name}/{run_id}_training_history.png')
 
