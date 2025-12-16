@@ -7,7 +7,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, cohen_kappa_score
 from sklearn.model_selection import train_test_split
-from data import split_XY
+from src.data import split_XY
 
 
 def average_accuracy(y_true, y_pred):
