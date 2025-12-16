@@ -104,7 +104,7 @@ for run_id in range(N_RUNS):
 
 # compute per-band RMSE and SNR (use all pixels mask)
     rmse_per_band, snr_db = compute_per_band_rmse_and_snr(cube, recon, mask=None)
-    plot_rmse_snr(rmse_per_band, snr_db, importance=band_imp, savefile=f'{data_name}/runs/{exp_name}/{run_id}_rmse_snr.png')
+    
 
     train_time = time.time() - start_time
     size_mb = model_size_mb(model)
@@ -112,6 +112,7 @@ for run_id in range(N_RUNS):
     # ---------- Band importance ----------
     band_imp = get_band_importance_from_dict(A, method='l1')
     band_metrics_all.append(band_imp)
+    plot_rmse_snr(rmse_per_band, snr_db, importance=band_imp, savefile=f'{data_name}/runs/{exp_name}/{run_id}_rmse_snr.png')
 
     # ---------- Classifier evaluation ----------
     clf_results = evaluate_classifiers(
