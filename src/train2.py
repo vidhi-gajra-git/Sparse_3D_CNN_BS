@@ -77,7 +77,7 @@ def train_model(model, hsi: np.ndarray,
                 sam_mode:str ='cosine',
                 early_stopping=True,
                 patience=5,
-                min_delta=1e-4
+                min_delta=1e-4,
                 warmup_epochs=5):
     """
     STABLE training version
