@@ -99,15 +99,15 @@ lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
     targets = torch.cat(targets, dim=0)  # (B, H*W)
 
     # train/val split on band indices
-    # indices = np.arange(B)
-    # np.random.seed(10)
-    # np.random.shuffle(indices)
-    # n_val = int(np.ceil(val_frac * B))
-    # val_idx = indices[:n_val]
-    # train_idx = indices[n_val:]
     indices = np.arange(B)
-    val_idx = indices[::10]                # every 5th band
-    train_idx = np.setdiff1d(indices, val_idx)
+    np.random.seed(10)
+    np.random.shuffle(indices)
+    n_val = int(np.ceil(val_frac * B))
+    val_idx = indices[:n_val]
+    train_idx = indices[:]
+    # indices = np.arange(B)
+    # val_idx = indices[::10]                # every 5th band
+    # train_idx = np.setdiff1d(indices, val_idx)
 
     patches_train = patches[train_idx].to(device)
     targets_train = targets[train_idx].to(device)
