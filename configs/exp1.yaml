@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp1-stability-mod
+  name: exp2-stability-mod
   runs: 5
   hyperparam_search: false
 
@@ -19,7 +19,7 @@ model:
   decoder_hidden_mult: 8
 
 regularization:
-  alpha: 1.0
+  alpha: 10.0
   beta: 1e-5
   lambda_l1: 5e-4
   lambda_tv: 5e-4
@@ -27,7 +27,7 @@ regularization:
   C_lr_mult: 1.0
   lambda_msssim:  1e-4
   msssim_levels:  5
-  auto_scale_alpha: true
+  auto_scale_alpha: false
   normalize_Z_for_C: true
   lambda_C_l1: 1e-3
   use_proximal_C : false
