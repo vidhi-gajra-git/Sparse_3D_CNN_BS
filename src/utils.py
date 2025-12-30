@@ -11,11 +11,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 # import pandas as pd
-# import torch.nn.functional as F
+import torch
+
+import torch.nn.functional as F
 # from torch.utils.data import Dataset, DataLoader, TensorDataset
 import numpy as np
 from sklearn.cluster import SpectralClustering
 import networkx as nx
+
 # ----------------------- Helpers (load, selection, testing) -----------------------
 def load_hsi(mat_path, gt_path):
     data = scipy.io.loadmat(mat_path)
