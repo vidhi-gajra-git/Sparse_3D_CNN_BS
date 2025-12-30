@@ -19,12 +19,12 @@ model:
   decoder_hidden_mult: 8
 
 regularization:
-  alpha: 0.1
+  alpha: 10
   beta: 1e-5
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1e-1
-  C_lr_mult: 1.0
+  C_lr_mult: 2.0
   lambda_msssim:  1e-4
   msssim_levels:  5
   auto_scale_alpha: false
