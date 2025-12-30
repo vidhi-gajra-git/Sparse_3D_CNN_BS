@@ -74,7 +74,9 @@ def train_model(
     lambda_C_l1=1e-3,
     lambda_msssim=3e-4,
     lambda_sam=3e-4,
-    lambda_sym=1e-2,        # NEW: symmetry loss
+    lambda_sym=1e-2, 
+    lambda_l1=1e-3
+                  # NEW: symmetry loss
 
     C_lr_mult=2.0,          # LOWER than before
     C_init_scale=1e-1,

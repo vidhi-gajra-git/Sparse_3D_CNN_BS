@@ -77,7 +77,7 @@ lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
     sam_mode:str ='cosine',
     early_stopping=True,
     patience=5,
-    min_delta=1e-4,):    # relative to exp(log_C_scale) to compute tau
+    min_delta=1e-4):    # relative to exp(log_C_scale) to compute tau
     """
     Returns: (model, Z_full_np, C_final_np, A_raw_np, history, recon_cube)
     history is a dict with epoch-wise metrics.
