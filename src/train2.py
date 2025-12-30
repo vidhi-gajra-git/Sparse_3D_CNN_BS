@@ -60,36 +60,25 @@ def prox_soft_threshold_offdiag_(C_tensor, tau):
         C_tensor.data.fill_diagonal_(0.0)
 
 # ----------------------- Training (minibatch-safe, no in-place) -----------------------
-def train_model(
-    model,
-    hsi: np.ndarray,
-    epochs=80,
-    batch_size=16,
-    lr=1e-3,
-
-    # ---------- STABILITY FIXES ----------
-    alpha=5.0,              # FIXED (no autoscale)
-    beta=1e-4,
-    lambda_tv=2e-4,
-    lambda_C_l1=1e-3,
-    lambda_msssim=3e-4,
-    lambda_sam=3e-4,
-    lambda_sym=1e-2, 
-    lambda_l1=1e-3,
-    msssim_levels: int = 5,
-                  # NEW: symmetry loss
-
-    C_lr_mult=2.0,          # LOWER than before
-    C_init_scale=1e-1,
-
-    warmup_epochs=5,        # NEW
-    device=None,
-    verbose=True,
-
-    early_stopping=True,
-    patience=6,
-    min_delta=1e-4,
-):
+def train_model(model, hsi: np.ndarray,
+                epochs=100, batch_size=16, lr=1e-3,
+                alpha=1.0, beta=1e-4, device=None,
+                verbose=True, C_lr_mult=5.0, C_init_scale=1e-2,
+                lambda_l1=1e-3, lambda_tv=5e-4, val_frac=0.2,
+                memory_cautious=True, auto_scale_alpha=True, desired_self_ratio=1.0,
+                normalize_Z_for_C=False,
+                # NEW args to control C regularization and proximal step
+                lambda_C_l1=0.0,        # L1 weight on off-diagonal entries (added to loss)
+                use_proximal_C=False,   # if True, apply proximal operator (soft-threshold) after each opt.step
+                prox_tau_scale=0.5,
+                lambda_msssim: float = 1e-3,
+            msssim_levels: int = 5,
+            lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
+                sam_mode:str ='cosine',
+                early_stopping=True,
+                patience=5,
+                min_delta=1e-4
+                warmup_epochs=5):
     """
     STABLE training version
     """
