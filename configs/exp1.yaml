@@ -19,7 +19,7 @@ model:
   decoder_hidden_mult: 8
 
 regularization:
-  alpha: 1.0
+  alpha: 0.1
   beta: 1e-5
   lambda_l1: 5e-4
   lambda_tv: 5e-4
