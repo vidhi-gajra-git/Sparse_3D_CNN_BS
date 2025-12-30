@@ -24,10 +24,10 @@ regularization:
   lambda_l1: 5e-4
   lambda_tv: 5e-4
   C_init_scale: 1e-1
-  C_lr_mult: 2.0
+  C_lr_mult: 1.0
   lambda_msssim:  1e-4
   msssim_levels:  5
-  auto_scale_alpha: false
+  auto_scale_alpha: true
   normalize_Z_for_C: true
   lambda_C_l1: 1e-3
   use_proximal_C : false
