@@ -76,6 +76,7 @@ def train_model(
     lambda_sam=3e-4,
     lambda_sym=1e-2, 
     lambda_l1=1e-3,
+    msssim_levels: int = 5,
                   # NEW: symmetry loss
 
     C_lr_mult=2.0,          # LOWER than before
