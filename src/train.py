@@ -106,7 +106,7 @@ lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
     # val_idx = indices[:n_val]
     # train_idx = indices[n_val:]
     indices = np.arange(B)
-    val_idx = indices[::5]                # every 5th band
+    val_idx = indices[::10]                # every 5th band
     train_idx = np.setdiff1d(indices, val_idx)
 
     patches_train = patches[train_idx].to(device)
