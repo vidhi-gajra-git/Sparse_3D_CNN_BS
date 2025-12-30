@@ -73,6 +73,7 @@ def train_model(model, hsi: np.ndarray,
                 prox_tau_scale=0.5,
                 lambda_msssim: float = 1e-3,
             msssim_levels: int = 5,
+            lambda_sym=1e-2, 
             lambda_sam: float =1e-3 ,   # weight for SAM loss (added to total loss)
                 sam_mode:str ='cosine',
                 early_stopping=True,
