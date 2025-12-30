@@ -1,6 +1,6 @@
 # testing the model 5 times and averaging the results
 experiment:
-  name: exp2-stability-mod-with-random-band-grps
+  name: exp1-stability-mod
   runs: 5
   hyperparam_search: false
 

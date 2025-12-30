@@ -107,14 +107,14 @@ def train_model(
 
     # ---------- FIXED split (deterministic) ----------
     indices = np.arange(B)
-    # val_idx = indices[::5]                # every 5th band
-    # train_idx = np.setdiff1d(indices, val_idx)
-    np.random.seed(10)
-    np.random.shuffle(indices)
-    val_frac=0.1
-    n_val = int(np.ceil(val_frac * B))
-    val_idx = indices[:n_val]
-    train_idx = indices[n_val:]
+    val_idx = indices[::5]                # every 5th band
+    train_idx = np.setdiff1d(indices, val_idx)
+    # np.random.seed(10)
+    # np.random.shuffle(indices)
+    # val_frac=0.1
+    # n_val = int(np.ceil(val_frac * B))
+    # val_idx = indices[:n_val]
+    # train_idx = indices[n_val:]
     # patches_train = patches[train_idx].to(device)
     # targets_train = targets[train_idx].to(device)
     # idxs_train = torch.from_numpy(train_idx).long()
