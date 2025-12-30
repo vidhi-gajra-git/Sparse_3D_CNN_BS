@@ -239,34 +239,48 @@ def test_selected_bands(X, Y ,top_k_bands):
     print(f"Kappa coefficient: {kappa_svc:.4f}")
 
 # ----------------------- Visualization helpers -----------------------
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+
 def plot_epoch_history(history, savefile=None):
-    # multiple subplots for losses
-    epochs = len(history['train_mse'])
-    x = np.arange(1, epochs+1)
-    plt.figure(figsize=(12,8))
+    # find all train_* keys
+    train_keys = sorted(k for k in history.keys() if k.startswith("train_"))
 
-    plt.subplot(3,2,1)
-    plt.plot(x, history['train_mse'], label='train'); plt.plot(x, history['val_mse'], label='val'); plt.title('MSE'); plt.legend(); plt.grid(alpha=0.3)
+    if not train_keys:
+        raise ValueError("No 'train_*' keys found in history")
 
-    plt.subplot(3,2,2)
-    plt.plot(x, history['train_l1'], label='train'); plt.plot(x, history['val_l1'], label='val'); plt.title('L1'); plt.legend(); plt.grid(alpha=0.3)
+    epochs = len(history[train_keys[0]])
+    x = np.arange(1, epochs + 1)
 
-    plt.subplot(3,2,3)
-    plt.plot(x, history['train_tv'], label='train'); plt.plot(x, history['val_tv'], label='val'); plt.title('TV'); plt.legend(); plt.grid(alpha=0.3)
+    n_plots = len(train_keys)
+    n_cols = 2
+    n_rows = math.ceil(n_plots / n_cols)
 
-    plt.subplot(3,2,4)
-    plt.plot(x, history['train_self'], label='train'); plt.plot(x, history['val_self'], label='val'); plt.title('Self-expression loss'); plt.legend(); plt.grid(alpha=0.3)
+    plt.figure(figsize=(6 * n_cols, 4 * n_rows))
 
-    plt.subplot(3,2,5)
-    plt.plot(x, history['train_sam'], label='train'); plt.plot(x, history['val_sam'], label='val'); plt.title('SAM (approx)'); plt.legend(); plt.grid(alpha=0.3)
+    for i, train_key in enumerate(train_keys, 1):
+        metric = train_key.replace("train_", "")
+        val_key = f"val_{metric}"
 
-    plt.subplot(3,2,6)
-    plt.plot(x, history['train_msssim'], label='train'); plt.plot(x, history['val_msssim'], label='val'); plt.title('MS-SSIM (1 - value)'); plt.legend(); plt.grid(alpha=0.3)
+        plt.subplot(n_rows, n_cols, i)
+        plt.plot(x, history[train_key], label="train")
+
+        if val_key in history:
+            plt.plot(x, history[val_key], label="val")
+
+        plt.title(metric.replace("_", " ").title())
+        plt.xlabel("Epoch")
+        plt.legend()
+        plt.grid(alpha=0.3)
 
     plt.tight_layout()
+
     if savefile:
         plt.savefig(savefile, dpi=200)
+
     plt.show()
+
 
 
 def compute_per_band_rmse_and_snr(cube, recon_cube, mask=None):
