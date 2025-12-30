@@ -64,7 +64,7 @@ def train_model(model, hsi: np.ndarray,
                 epochs=100, batch_size=16, lr=1e-3,
                 alpha=1.0, beta=1e-4, device=None,
                 verbose=True, C_lr_mult=5.0, C_init_scale=1e-2,
-                lambda_l1=1e-3, lambda_tv=5e-4, val_frac=0.2,
+                lambda_l1=1e-3, lambda_tv=5e-4, val_frac=0.4,
                 memory_cautious=True, auto_scale_alpha=True, desired_self_ratio=1.0,
                 normalize_Z_for_C=False,
                 # NEW args to control C regularization and proximal step
