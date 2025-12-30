@@ -65,15 +65,17 @@ class DecoderFromLatent(nn.Module):
             nn.Linear(h, h//2),
             nn.GELU(),
             nn.Dropout(dropout),
-            nn.Linear(h//2, out_dim),
+            nn.Linear(h//2, h//4),
+            nn.Linear(h//4, out_dim),
+            nn.GELU(),
         )
     def forward(self, z):
         return self.net(z)
 
 class SpectralAttention(nn.Module):
-    def __init__(self, dim, nheads=2, dropout=0):
+    def __init__(self, dim, nheads=4, dropout=0.0):
         super().__init__()
-        self.mha = nn.MultiheadAttention(embed_dim=dim, num_heads=nheads, dropout=0.1, batch_first=True)
+        self.mha = nn.MultiheadAttention(embed_dim=dim, num_heads=nheads, dropout=dropout, batch_first=True)
         self.ln1 = nn.LayerNorm(dim)
         self.ff = nn.Sequential(nn.Linear(dim, dim*2), nn.ReLU(inplace=True), nn.Linear(dim*2, dim))
         self.ln2 = nn.LayerNorm(dim)
@@ -88,7 +90,7 @@ class SpectralAttention(nn.Module):
         return seq.squeeze(0)
 
 class HybridModel(nn.Module):
-    def __init__(self, window_size, H, W, latent_dim=64, use_attention=True,
+    def __init__(self, window_size, H, W, latent_dim=64, use_attention=False,
                  decoder_dropout=0.2, decoder_hidden_mult=3):
         super().__init__()
         self.window_size = window_size
@@ -174,4 +176,3 @@ class HybridModel(nn.Module):
                 C_subset = C_subset.to(target_device, non_blocking=True)
             C_subset = C_scale * C_subset
             return torch.matmul(C_subset, Z_proc)     # (N, D)
-

@@ -2,7 +2,8 @@ import scipy.io
 # import math
 # import copy
 
-from sklearn.metrics import accuracy_score, cohen_kappa_score
+from sklearn.metrics import accuracy_score, cohen_kappa_score,confusion_matrix
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -11,14 +12,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 # import pandas as pd
-import torch
-
 import torch.nn.functional as F
 # from torch.utils.data import Dataset, DataLoader, TensorDataset
 import numpy as np
 from sklearn.cluster import SpectralClustering
 import networkx as nx
-
+import numpy as np
+import torch
+import torch.nn as nn
 # ----------------------- Helpers (load, selection, testing) -----------------------
 def load_hsi(mat_path, gt_path):
     data = scipy.io.loadmat(mat_path)
@@ -395,6 +396,3 @@ def sam_loss(recon_flat, target_flat, mode='cosine'):
     cos = torch.clamp(cos, -1.0, 1.0)
     ang = torch.acos(cos)
     return ang.mean()
-
-
-

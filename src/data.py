@@ -74,7 +74,7 @@ class BandPatchDataset(Dataset):
         target = torch.from_numpy(target)
         return patch, target, b
 
-def split_XY_train_val_test(X, Y, train_size=0.6, val_size=0.2, test_size=0.2, seed=42):
+def split_XY_train_val_test(X, Y, train_size=0.8, val_size=0.15, test_size=0.5, seed=42):
     assert abs(train_size + val_size + test_size - 1.0) < 1e-6
 
     scaler = StandardScaler()
