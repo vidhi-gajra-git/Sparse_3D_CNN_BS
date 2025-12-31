@@ -10,6 +10,31 @@ from src.classifiers import evaluate_classifiers
 from src.search_param import run_hyperparam_search
 # from src.utils import save_training_plots
 # ----------Helper functions to be shifted to utils ------------------------------
+import torch
+def cast_to_float(d, keys):
+    for k in keys:
+        if k in d:
+            d[k] = float(d[k])
+
+
+def model_size_mb(model):
+    """
+    Returns the size of a PyTorch model in megabytes (MB),
+    including parameters and buffers.
+    """
+    param_bytes = 0
+    buffer_bytes = 0
+
+    for p in model.parameters():
+        param_bytes += p.numel() * p.element_size()
+
+    for b in model.buffers():
+        buffer_bytes += b.numel() * b.element_size()
+
+    total_bytes = param_bytes + buffer_bytes
+    size_mb = total_bytes / (1024 ** 2)
+
+    return round(size_mb, 3)
 def save_latex_table(avg_df, out_path):
     """
     Saves a LaTeX table with mean ± std metrics.
