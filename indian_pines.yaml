@@ -1,0 +1,47 @@
+# testing the model 5 times and averaging the results
+experiment:
+  name: exp1
+  runs: 5
+  hyperparam_search: false
+
+training:
+  epochs: 20
+  batch_size: 8
+  lr: 1e-3
+  early_stopping: false
+  patience: 6
+  min_delta: 1e-3
+
+model:
+  window_size: 5
+  latent_dim: 256
+  decoder_dropout: 0.0
+  decoder_hidden_mult: 8
+
+regularization:
+  alpha: 1.0
+  beta: 1e-5
+  lambda_l1: 5e-4
+  lambda_tv: 5e-4
+  C_init_scale: 1e-1
+  C_lr_mult: 1.0
+  lambda_msssim:  1e-4
+  msssim_levels:  5
+  auto_scale_alpha: true
+  normalize_Z_for_C: true
+  lambda_C_l1: 1e-3
+  use_proximal_C : false
+  
+
+band_selection:
+  topk: [10,15,20, 25, 30,35,40]
+
+data:
+  mat_path: data/Indian_pines_corrected.mat
+  gt_path: data/Indian_pines_gt.mat
+  dataset: Indian_pines
+
+classifiers:
+  - rf
+  - svc
+  - knn
