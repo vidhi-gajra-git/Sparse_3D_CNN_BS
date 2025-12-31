@@ -9,8 +9,65 @@ from src.utils import plot_epoch_history, compute_per_band_rmse_and_snr, plot_rm
 from src.classifiers import evaluate_classifiers
 from src.search_param import run_hyperparam_search
 # from src.utils import save_training_plots
+# ----------Helper functions to be shifted to utils ------------------------------
+def save_latex_table(avg_df, out_path):
+    """
+    Saves a LaTeX table with mean ± std metrics.
+    """
+    df = avg_df.copy()
+
+    df["OA"] = df["OA_mean"].map("{:.4f}".format) + " ± " + df["OA_std"].map("{:.4f}".format)
+    df["AA"] = df["AA_mean"].map("{:.4f}".format) + " ± " + df["AA_std"].map("{:.4f}".format)
+    df["Kappa"] = df["Kappa_mean"].map("{:.4f}".format) + " ± " + df["Kappa_std"].map("{:.4f}".format)
+
+    latex_df = df[["classifier", "num_bands", "OA", "AA", "Kappa"]]
+    latex_df = latex_df.sort_values(["classifier", "num_bands"])
+
+    latex_str = latex_df.to_latex(
+        index=False,
+        escape=False,
+        caption="Classification performance for different band counts (mean ± std over runs).",
+        label="tab:band_selection_results"
+    )
+
+    with open(out_path, "w") as f:
+        f.write(latex_str)
 
 
+def plot_combined_accuracy(avg_df, out_dir, metric="OA_mean"):
+    """
+    Combined plot: accuracy vs bands for all classifiers.
+    """
+    plt.figure(figsize=(7, 5))
+
+    for clf in avg_df["classifier"].unique():
+        sub = avg_df[avg_df["classifier"] == clf].sort_values("num_bands")
+
+        x = sub["num_bands"].values
+        y = sub[metric].values
+
+        best_idx = y.argmax()
+
+        plt.plot(x, y, marker="o", linewidth=2, label=clf.upper())
+        plt.scatter(
+            x[best_idx],
+            y[best_idx],
+            s=80,
+            zorder=3
+        )
+
+    plt.xlabel("Number of selected bands")
+    plt.ylabel(metric.replace("_", " "))
+    plt.title(f"Performance vs Band Count ({metric.replace('_', ' ')})")
+    plt.grid(alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+
+    save_path = os.path.join(out_dir, f"combined_{metric}_vs_bands.png")
+    plt.savefig(save_path, dpi=200)
+    plt.close()
+
+# -------------------------------------------------------------------------------------
 def run_from_config(cfg_path):
     with open(cfg_path) as f:
         cfg = yaml.safe_load(f)
@@ -130,6 +187,12 @@ def run_from_config(cfg_path):
     avg_df["num_runs"] = N_RUNS
 
     avg_df.to_csv(f"{out_dir}/results_avg.csv", index=False)
+    plot_combined_accuracy(avg_df, out_dir, metric="OA_mean")
+    plot_combined_accuracy(avg_df, out_dir, metric="AA_mean")
+    plot_combined_accuracy(avg_df, out_dir, metric="Kappa_mean")
+    save_latex_table(avg_df, f"{out_dir}/results_table.tex")
+
+
 
     band_imp_df = pd.DataFrame(band_metrics_all)
     band_imp_df.to_csv(f"{out_dir}/band_metrics_per_run.csv", index=False)
