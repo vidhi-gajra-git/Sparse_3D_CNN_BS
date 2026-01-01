@@ -257,12 +257,12 @@ def run_from_config(cfg_path):
             "lambda_msssim", "lambda_C_l1"
         ]
     )
-    BASE_SEED = cfg["experiment"].get("seed", 42)
+    # BASE_SEED = cfg["experiment"].get("seed", 42)
 
     # ================= MAIN RUN LOOP =================
     for run_id in range(N_RUNS):
         # for run_id in range(N_RUNS):
-        set_global_seed(BASE_SEED + run_id)
+        # set_global_seed(BASE_SEED + run_id)
         start_time = time.time()
 
         model = HybridModel(**cfg["model"], H=H, W=W).to(device)
@@ -358,7 +358,7 @@ def run_from_config(cfg_path):
     print(f"RF: 20 vs 30 bands, p = {p_val:.4f}")
     p_val = significance_test(results_df, "knn", 20, 30)
     print(f"KNN: 20 vs 30 bands, p = {p_val:.4f}")
-    plot_band_importance_ci(band_imp_df, out_dir)
+    # plot_band_importance_ci(band_imp_df, out_dir)
 
     
     
