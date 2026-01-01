@@ -261,8 +261,8 @@ def run_from_config(cfg_path):
 
     # ================= MAIN RUN LOOP =================
     for run_id in range(N_RUNS):
-        for run_id in range(N_RUNS):
-            set_global_seed(BASE_SEED + run_id)
+        # for run_id in range(N_RUNS):
+        set_global_seed(BASE_SEED + run_id)
         start_time = time.time()
 
         model = HybridModel(**cfg["model"], H=H, W=W).to(device)
