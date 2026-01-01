@@ -16,13 +16,15 @@ def average_accuracy(y_true, y_pred):
     return class_acc.mean()
 
 
-def plot_band_importance(band_imp, title="Band importance"):
+def plot_band_importance(band_imp,outdir=None, title="Band importance"):
     plt.figure(figsize=(12, 4))
     plt.plot(band_imp, marker="o", linewidth=1)
     plt.xlabel("Band index")
     plt.ylabel("Importance score")
     plt.title(title)
     plt.grid(alpha=0.3)
+    if outdir:
+        plt.savefig(savefile, dpi=200)
     plt.show()   # 👈 REQUIRED for Kaggle inline display
 
 
