@@ -14,6 +14,33 @@ from src.search_param import run_hyperparam_search
 import torch
 from scipy.stats import wilcoxon
 from scipy.stats import kendalltau
+# ================== GLOBAL SEED SETUP ==================
+import os
+import random
+import numpy as np
+import torch
+
+def set_global_seed(seed: int = 42):
+    # Python
+    random.seed(seed)
+
+    # NumPy
+    np.random.seed(seed)
+
+    # PyTorch
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    # Determinism flags (important)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # For CUDA >= 10.2 (extra safety)
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
+    print(f"🌱 Global seed set to {seed}")
+
 
 
 def band_ranking_agreement(band_imp_df):
@@ -230,9 +257,12 @@ def run_from_config(cfg_path):
             "lambda_msssim", "lambda_C_l1"
         ]
     )
+    BASE_SEED = cfg["experiment"].get("seed", 42)
 
     # ================= MAIN RUN LOOP =================
     for run_id in range(N_RUNS):
+        for run_id in range(N_RUNS):
+            set_global_seed(BASE_SEED + run_id)
         start_time = time.time()
 
         model = HybridModel(**cfg["model"], H=H, W=W).to(device)
