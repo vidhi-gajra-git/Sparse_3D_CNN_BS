@@ -24,7 +24,7 @@ def plot_band_importance(band_imp,outdir=None, title="Band importance"):
     plt.title(title)
     plt.grid(alpha=0.3)
     if outdir:
-        plt.savefig(savefile, dpi=200)
+        plt.savefig(outdir, dpi=200)
     plt.show()   # 👈 REQUIRED for Kaggle inline display
 
 
