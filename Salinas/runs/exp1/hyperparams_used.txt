@@ -1,0 +1,27 @@
+# Training
+epochs: 20
+batch_size: 8
+lr: 0.001
+early_stopping: false
+patience: 6
+min_delta: 0.001
+
+# Model
+window_size: 5
+latent_dim: 256
+decoder_dropout: 0.0
+decoder_hidden_mult: 8
+
+# Regularization
+alpha: 10.0
+beta: 1.0e-05
+lambda_l1: 0.0005
+lambda_tv: 0.0005
+C_init_scale: 0.1
+C_lr_mult: 1.0
+lambda_msssim: 0.0001
+msssim_levels: 5
+auto_scale_alpha: true
+normalize_Z_for_C: true
+lambda_C_l1: 0.001
+use_proximal_C: false
