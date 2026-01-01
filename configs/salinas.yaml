@@ -39,7 +39,7 @@ band_selection:
 data:
   mat_path: data/Salinas_corrected.mat
   gt_path: data/Salinas_gt.mat
-  dataset: KSC
+  dataset: Salinas
 
 classifiers:
   - rf
