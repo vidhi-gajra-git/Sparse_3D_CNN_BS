@@ -12,6 +12,42 @@ from src.search_param import run_hyperparam_search
 # from src.utils import save_training_plots
 # ----------Helper functions to be shifted to utils ------------------------------
 import torch
+from scipy.stats import wilcoxon
+from scipy.stats import kendalltau
+
+
+def band_ranking_agreement(band_imp_df):
+    """
+    Computes average Kendall Tau across all pairs of runs.
+    """
+    rankings = [
+        np.argsort(-band_imp_df.iloc[i].values)
+        for i in range(len(band_imp_df))
+    ]
+
+    taus = []
+    for i in range(len(rankings)):
+        for j in range(i + 1, len(rankings)):
+            tau, _ = kendalltau(rankings[i], rankings[j])
+            taus.append(tau)
+
+    return np.mean(taus), np.std(taus)
+
+
+def significance_test(results_df, classifier, bands_a, bands_b):
+    a = results_df[
+        (results_df["classifier"] == classifier) &
+        (results_df["num_bands"] == bands_a)
+    ]["OA"].values
+
+    b = results_df[
+        (results_df["classifier"] == classifier) &
+        (results_df["num_bands"] == bands_b)
+    ]["OA"].values
+
+    stat, p = wilcoxon(a, b)
+    return p
+
 def save_hyperparams_txt(cfg, out_dir):
     with open(f"{out_dir}/hyperparams_used.txt", "w") as f:
         f.write("# Training\n")
@@ -285,7 +321,17 @@ def run_from_config(cfg_path):
     band_imp_df.mean(axis=0).to_frame("mean_importance").to_csv(
         f"{out_dir}/band_metrics_avg.csv"
     )
+    print("🦋 Kendall tau values for the bands are (mean,std)", band_ranking_agreement(band_imp_df))
+    p_val = significance_test(results_df, "svc", 20, 30)
+    print(f"SVC: 20 vs 30 bands, p = {p_val:.4f}")
+    p_val = significance_test(results_df, "rf", 20, 30)
+    print(f"RF: 20 vs 30 bands, p = {p_val:.4f}")
+    p_val = significance_test(results_df, "knn", 20, 30)
+    print(f"KNN: 20 vs 30 bands, p = {p_val:.4f}")
     plot_band_importance_ci(band_imp_df, out_dir)
+
+    
+    
     save_hyperparams_txt(cfg, out_dir)
     # ================= Accuracy using AVERAGED band importance =================
     mean_band_imp = band_imp_df.mean(axis=0).values
