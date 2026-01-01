@@ -232,7 +232,7 @@ if __name__ == "__main__":
     config_files = [
         "configs/indian_pines.yaml",
         "configs/salinas.yaml",
-        "configs/pavia.yaml",
+        "configs/pavia_u.yaml",
         "configs/ksc.yaml"
     ]
 
