@@ -12,10 +12,20 @@ from src.search_param import run_hyperparam_search
 # from src.utils import save_training_plots
 # ----------Helper functions to be shifted to utils ------------------------------
 import torch
+def save_hyperparams_txt(cfg, out_dir):
+    with open(f"{out_dir}/hyperparams_used.txt", "w") as f:
+        f.write("# Training\n")
+        f.write(yaml.dump(cfg["training"], sort_keys=False))
+        f.write("\n# Model\n")
+        f.write(yaml.dump(cfg["model"], sort_keys=False))
+        f.write("\n# Regularization\n")
+        f.write(yaml.dump(cfg["regularization"], sort_keys=False))
+
 def cast_to_float(d, keys):
     for k in keys:
         if k in d:
             d[k] = float(d[k])
+        
 
 
 def model_size_mb(model):
@@ -58,40 +68,89 @@ def save_latex_table(avg_df, out_path):
 
     with open(out_path, "w") as f:
         f.write(latex_str)
+import seaborn as sns
+import numpy as np
+
+def plot_band_importance_ci(band_imp_df, out_dir):
+    """
+    Plots mean ± 95% CI for band importance across runs.
+    """
+    df = band_imp_df.copy()
+    df["run"] = np.arange(len(df))
+    long_df = df.melt(id_vars="run", var_name="band", value_name="importance")
+
+    plt.figure(figsize=(10, 4))
+    sns.regplot(
+        data=long_df,
+        x="band",
+        y="importance",
+        scatter=False,
+        ci=95,
+        line_kws={"linewidth": 2}
+    )
+
+    plt.title("Band importance with 95% confidence interval")
+    plt.xlabel("Band index")
+    plt.ylabel("Importance")
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+
+    plt.savefig(f"{out_dir}/band_importance_ci.png", dpi=200)
+    plt.close()
 
 
-def plot_combined_accuracy(avg_df, out_dir, metric="OA_mean"):
+
+def plot_combined_metrics(avg_df, out_dir):
     """
-    Combined plot: accuracy vs bands for all classifiers.
+    For each classifier:
+    - One figure
+    - OA, AA, Kappa plotted together
+    - Different line styles
+    - Best point marked for each metric
     """
-    plt.figure(figsize=(7, 5))
+    metrics = {
+        "OA_mean": {"label": "OA", "linestyle": "-", "marker": "o"},
+        "AA_mean": {"label": "AA", "linestyle": "--", "marker": "s"},
+        "Kappa_mean": {"label": "Kappa", "linestyle": ":", "marker": "^"},
+    }
 
     for clf in avg_df["classifier"].unique():
         sub = avg_df[avg_df["classifier"] == clf].sort_values("num_bands")
-
         x = sub["num_bands"].values
-        y = sub[metric].values
 
-        best_idx = y.argmax()
+        plt.figure(figsize=(7, 5))
 
-        plt.plot(x, y, marker="o", linewidth=2, label=clf.upper())
-        plt.scatter(
-            x[best_idx],
-            y[best_idx],
-            s=80,
-            zorder=3
+        for metric, style in metrics.items():
+            y = sub[metric].values
+            best_idx = y.argmax()
+
+            plt.plot(
+                x, y,
+                linestyle=style["linestyle"],
+                marker=style["marker"],
+                linewidth=2,
+                label=style["label"]
+            )
+
+            plt.scatter(
+                x[best_idx],
+                y[best_idx],
+                s=100,
+                zorder=3
+            )
+
+        plt.xlabel("Number of selected bands")
+        plt.ylabel("Performance")
+        plt.title(f"{clf.upper()} – Performance vs Band Count")
+        plt.grid(alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+
+        plt.savefig(
+            f"{out_dir}/{clf}_all_metrics_vs_bands.png",
+            dpi=200
         )
-
-    plt.xlabel("Number of selected bands")
-    plt.ylabel(metric.replace("_", " "))
-    plt.title(f"Performance vs Band Count ({metric.replace('_', ' ')})")
-    plt.grid(alpha=0.3)
-    plt.legend()
-    plt.tight_layout()
-
-    save_path = os.path.join(out_dir, f"combined_{metric}_vs_bands.png")
-    plt.savefig(save_path, dpi=200)
-    plt.close()
+        plt.close()
 
 # -------------------------------------------------------------------------------------
 def run_from_config(cfg_path):
@@ -214,9 +273,8 @@ def run_from_config(cfg_path):
     avg_df["num_runs"] = N_RUNS
 
     avg_df.to_csv(f"{out_dir}/results_avg.csv", index=False)
-    plot_combined_accuracy(avg_df, out_dir, metric="OA_mean")
-    plot_combined_accuracy(avg_df, out_dir, metric="AA_mean")
-    plot_combined_accuracy(avg_df, out_dir, metric="Kappa_mean")
+    plot_combined_metrics(avg_df, out_dir)
+    
     save_latex_table(avg_df, f"{out_dir}/results_table.tex")
 
 
@@ -227,6 +285,33 @@ def run_from_config(cfg_path):
     band_imp_df.mean(axis=0).to_frame("mean_importance").to_csv(
         f"{out_dir}/band_metrics_avg.csv"
     )
+    plot_band_importance_ci(band_imp_df, out_dir)
+    save_hyperparams_txt(cfg, out_dir)
+    # ================= Accuracy using AVERAGED band importance =================
+    mean_band_imp = band_imp_df.mean(axis=0).values
+    
+    avg_imp_results = evaluate_classifiers(
+        X=X,
+        Y=Y,
+        band_imp=mean_band_imp,
+        band_sizes=cfg["band_selection"]["topk"],
+        classifiers=cfg["classifiers"]
+    )
+    
+    for r in avg_imp_results:
+        r.update({
+            "experiment": exp_name,
+            "dataset": dataset,
+            "run": "avg_band_imp"
+        })
+    
+    pd.DataFrame(avg_imp_results).to_csv(
+        f"{out_dir}/results_avg_bandimp.csv",
+        index=False
+    )
+    
+
+
 
     print(f"✅ Finished experiment {exp_name} on {dataset}")
 if __name__ == "__main__":
