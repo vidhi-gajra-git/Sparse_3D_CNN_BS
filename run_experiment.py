@@ -272,7 +272,7 @@ def run_from_config(cfg_path):
             band_sizes=cfg["band_selection"]["topk"],
             classifiers=cfg["classifiers"]
         )
-        plot_band_importance(band_imp,outdir=f"{outdir}/{run_id}_band_imp.png")
+        plot_band_importance(band_imp,outdir=f"{out_dir}/{run_id}_band_imp.png")
 
         for r in clf_results:
             r.update({
