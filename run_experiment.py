@@ -7,7 +7,7 @@ from src.data import load_hsi
 from src.model import HybridModel
 from src.train import train_model
 from src.utils import plot_epoch_history, compute_per_band_rmse_and_snr, plot_rmse_snr, get_band_importance_from_dict
-from src.classifiers import evaluate_classifiers
+from src.classifiers import evaluate_classifiers, plot_band_importance
 from src.search_param import run_hyperparam_search
 # from src.utils import save_training_plots
 # ----------Helper functions to be shifted to utils ------------------------------
@@ -177,6 +177,7 @@ def run_from_config(cfg_path):
             band_sizes=cfg["band_selection"]["topk"],
             classifiers=cfg["classifiers"]
         )
+        plot_band_importance(band_imp,outdir=f"{outdir}/{run_id}_band_imp.png")
 
         for r in clf_results:
             r.update({
